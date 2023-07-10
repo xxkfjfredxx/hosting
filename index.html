@@ -7,7 +7,11 @@
 	<script>
 		$(document).ready(function () {
 
-			
+			var startService = function(){
+				window.location = 'olimpiait://reconoser?security=https';
+			}
+
+			$("#StartService").click(startService);
 
 			$("#Gps").click(function () {
 				var BiometriaSolicitud = new Object();
