@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head runat="server">
+	<title></title>
+	<script src="https://code.jquery.com/jquery-1.7.1.min.js" type="text/javascript"></script>
+	<script>
+		$(document).ready(function () {
+
+			var startService = function(){
+				window.location = 'olimpiait://reconoser?security=https';
+			}
+
+			$("#StartService").click(startService);
+
+			$("#Gps").click(function () {
+				var BiometriaSolicitud = new Object();
+				BiometriaSolicitud.SerialDispositivo = $('#serial').val();
+				BiometriaSolicitud.NumeroDedo = $('#numDedo').val();
+				BiometriaSolicitud.TipoDedo = $('#TipDedo').val();
+				var res = "https://localhost:5000/TestGPS";
+				$.post(res, BiometriaSolicitud, function (data) {
+					console.log(data);
+
+					document.getElementById("idLatitud").innerHTML = data.Lat;
+					document.getElementById("idLongitud").innerHTML = data.Long;
+					document.getElementById("idError").innerHTML = data.Error;
+					document.getElementById("idDesError").innerHTML = data.DescripcionError;
+
+				}).fail( function(error){
+					console.log(error);
+					startService();
+				});
+			});
+
+			$("#Save").click(function () {
+				var BiometriaSolicitud = new Object();
+				BiometriaSolicitud.SerialDispositivo = $('#serial').val();
+				BiometriaSolicitud.NumeroDedo = $('#numDedo').val();
+				BiometriaSolicitud.TipoDedo = $('#TipDedo').val();
+
+				// var str1 = $('#url').val();
+				// var str2 = "/api/SolicitudesIdentica";
+				// var res = str1.concat(str2);
+
+				var res = "https://localhost:5000/SolicitudOlimpia";
+				$.post(res, BiometriaSolicitud, function (data) {
+					console.log(data);
+
+					document.getElementById("idSerial").innerHTML = data.Respuesta;
+					//document.getElementById("idSerial").innerHTML = data.SerialDispositivo;
+					//document.getElementById("idNumDedo").innerHTML = data.NumeroDedo;
+					//document.getElementById("idTipoDedo").innerHTML = data.TipoDedo;
+					//document.getElementById("IdBiom").innerHTML = data.IdBiometria;
+					document.getElementById("idError").innerHTML = data.Error;
+					document.getElementById("idDesError").innerHTML = data.DescripcionError;
+
+				}).fail( function(error){
+					console.log(error);
+					startService();
+				});
+			});
+
+			$("#Save2").click(function () {
+				var BiometriaSolicitud = new Object();
+				BiometriaSolicitud.SerialDispositivo = $('#serial2').val();
+				BiometriaSolicitud.NumeroDedo = $('#numDedo2').val();
+				BiometriaSolicitud.TipoDedo = $('#TipDedo2').val();
+
+				// var str1 = $('#url').val();
+				// var str2 = "/api/SolicitudesIdentica";
+				// var res = str1.concat(str2);
+
+				var res = "https://localhost:5000/SolicitudOlimpia";
+				$.post(res, BiometriaSolicitud, function (data) {
+					console.log(data);
+
+					document.getElementById("idSerial1").innerHTML = data.Respuesta;
+					//document.getElementById("idSerial").innerHTML = data.SerialDispositivo;
+					//document.getElementById("idNumDedo").innerHTML = data.NumeroDedo;
+					//document.getElementById("idTipoDedo").innerHTML = data.TipoDedo;
+					//document.getElementById("IdBiom").innerHTML = data.IdBiometria;
+					document.getElementById("idError1").innerHTML = data.Error;
+					document.getElementById("idDesError1").innerHTML = data.DescripcionError;
+
+				}).fail( function(error){
+					console.log(error);
+					startService();
+				});
+			});
+
+			$("#formato").click(function(){
+				var solicitud = new Object();
+				solicitud.idCliente = 1024;
+				solicitud.codigoConvenio = "F4C6C791-3AEB-425F-9B7B-A1A8C6C360B0"
+
+				var res = "https://localhost:5000/SolicitudFormato";
+				$.post(res,solicitud,function(data){
+					document.getElementById("DescripcionFormato").innerHTML = data.texto;
+				}).fail(function(error){
+					console.log(error);
+				});
+			});
+
+			$("#cargaformato").click(function(){
+				var res = "https://localhost:5000/Ingreso";
+				var banco = new Object();
+				//banco.login = "jneira";
+				banco.login = "azamudi@bancodebogota.com.co";
+				banco.idOficina = "Oficina Norte";
+				banco.idProducto = 48;
+				banco.numeroDocumento = $('#numdoc').val();
+				banco.idCliente = 1024;
+				banco.convenio = "F4C6C791-3AEB-425F-9B7B-A1A8C6C360B0";
+
+				$.post(res,banco,function(data){
+					console.log("respuesta data: ", data);
+					document.getElementById("CargaFormato").innerHTML = data.resultado;
+					document.getElementById("idLatitud").innerHTML = data.Latitud;
+					document.getElementById("idLongitud").innerHTML = data.Longitud;
+					document.getElementById("CargaFormatoError").innerHTML = data.descripcionError
+				}).fail(function(error){
+					console.log(error);
+				});
+			});
+
+			$("#BuscarF").click(function () {
+				var BiometriaSolicitud = new Object();
+				BiometriaSolicitud.SerialDispositivo = $('#serial').val();
+				BiometriaSolicitud.NumeroDedo = $('#numDedo').val();
+				BiometriaSolicitud.TipoDedo = $('#TipDedo').val();
+				var str1 = $('#url').val();
+				var str2 = "/api/SolicitudesFormatoAutorizaciones?idCliente=22&idConvenioautenticacion=759A28EB-8E51-4A3D-8681-F8E6F23088A5";
+				var res = str1.concat(str2);
+
+				$.get(res, function (data) {
+					console.log(data);
+					document.getElementById("idAuto").innerHTML = JSON.stringify(data);
+				});
+			});
+
+			
+
+			$("#ValidaIdentidad").click(function () {
+
+				dataloc = []
+				//Inserta primero
+				dataloc.push({
+					Consecutivo: '0',
+					IdTipo: 2,
+					IdSubtipo: $('#numDedo').val(),
+					Formato: 'ISO-FMR-MO',
+					Buffer: document.getElementById('IdBiom').innerHTML,
+					Template: ''
+				});
+
+				dataloc.push({
+					Consecutivo: '1',
+					IdTipo: 2,
+					IdSubtipo: $('#numDedo2').val(),
+					Formato: 'ISO-FMR-MO',
+					Buffer: document.getElementById('IdBiom1').innerHTML,
+					Template: ''
+				});
+
+
+				var BiometriaSolicitud = new Object();
+				BiometriaSolicitud.IdCliente = "1024";
+				BiometriaSolicitud.IdConvenioAutenticacion = "F4C6C791-3AEB-425F-9B7B-A1A8C6C360B0";
+				BiometriaSolicitud.IdTerminal = "357079070013142";
+				BiometriaSolicitud.IpTerminal = "10.1.50.55";
+				BiometriaSolicitud.Tramite = "validación";
+				BiometriaSolicitud.IdPeticion = "e1046c63-ba08-4b29-9f26-3068e2cb2146";
+				BiometriaSolicitud.IdTransaccion = "";
+				BiometriaSolicitud.NumeroBiometrias = 2;
+				BiometriaSolicitud.TipoDocumentoCandidato = "CC";
+				BiometriaSolicitud.Candidato = $('#ced').val();
+				BiometriaSolicitud.BiometriasProceso = dataloc;
+				BiometriaSolicitud.codigoProducto = "001";
+				BiometriaSolicitud.codigoOficina = "100";
+				BiometriaSolicitud.Maquina = "357079070013142";
+				BiometriaSolicitud.TipoIdentidadMaquina = 2;
+				BiometriaSolicitud.UsuarioCreacion = "jneira";
+
+				console.log("biometria", BiometriaSolicitud);
+
+				var str1 = $('#url').val();
+				var str2 = "/api/SolicitudVerificarIdentidad";
+				var res = str1.concat(str2);
+
+				$.post(res, BiometriaSolicitud, function (data) {
+					console.log(data);
+
+					document.getElementById("Resultado").innerHTML = data.Resultado;
+					document.getElementById("DescripcionResultado").innerHTML = data.DescripcionError;
+				});
+			});
+
+		});
+
+	</script>
+</head>
+
+<body>
+	<form id="form1">
+		<table>
+			<tr>
+				<td>
+					<!-- <input type="button" id="StartService" value="Iniciar Servicio"/> -->
+				</td>
+			</tr>
+		</table>
+		<!--<table>
+			<tr>
+				<td>
+					<label>Url Servicio</label>
+				</td>
+				<td>-->
+					<!-- <input type="text" name="url" id="url" value="https://10.130.1.40:6309"> -->
+					<!--<input type="text" name="url" id="url" value="https://demorcs.olimpiait.com:6315">
+				</td>
+			</tr>
+		</table>
+		<table>
+			<tr>
+				<td>
+					<input type="button" id="BuscarF" value="Consultar Formato" />
+				<td>
+				<td>
+					<textarea id="idAuto" name="FormatoAutorizacion" rows="12" cols="200"></textarea>
+				</td>
+			</tr>
+		</table>-->
+		<table>
+			<tr>
+				<td>
+					Serial: <input type="text" name="serial" id="serial" value="1530I173349" />
+				</td>
+				
+				<td>
+					NumeroDedo: <input type="text" name="numDedo" id="numDedo" value="2" />
+				</td>
+
+				<td>
+					TipoDedo: <input type="text" name="TipDedo" id="TipDedo" value="1" />
+				</td>
+				<td>
+					<input type="button" id="Save" value="Capturar Huella 1" />
+				</td>
+			</tr>
+		</table>
+		<table>
+			<tr>
+				<td>
+					<label>Serial:</label>
+				</td>
+				<td>
+					<label id="idSerial"></label>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label>NumeroDedo:</label>
+				</td>
+				<td>
+					<label id="idNumDedo"></label>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label>TipDedo:</label>
+				</td>
+				<td>
+					<label id="idTipoDedo"></label>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label>IdBiometria:</label>
+				</td>
+				<td>
+					<label id="IdBiom"></label>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label>Error:</label>
+				</td>
+				<td>
+					<label id="idError"></label>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label>DescripcionError:</label>
+				</td>
+				<td>
+					<label id="idDesError"></label>
+				</td>
+			</tr>
+
+			<table>
+				<tr>
+					<td>
+						Serial: <input type="text" name="serial" id="serial2" value="1530I173349" />
+					</td>
+					<td>
+						NumeroDedo: <input type="text" name="numDedo" id="numDedo2" value="7" />
+					</td>
+					<td>
+						TipoDedo: <input type="text" name="TipDedo" id="TipDedo2" value="2" />
+					</td>
+					<td>
+						<input type="button" id="Save2" value="Capturar Huella 2" />
+					</td>
+				</tr>
+			</table>
+			<table>
+				<tr>
+					<td>
+						<label>Serial:</label>
+					</td>
+					<td>
+						<label id="idSerial1"></label>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label>NumeroDedo:</label>
+					</td>
+					<td>
+						<label id="idNumDedo1"></label>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label>TipDedo:</label>
+					</td>
+					<td>
+						<label id="idTipoDedo1"></label>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label>IdBiometria:</label>
+					</td>
+					<td>
+						<label id="IdBiom1"></label>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label>Error:</label>
+					</td>
+					<td>
+						<label id="idError1"></label>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label>DescripcionError:</label>
+					</td>
+					<td>
+						<label id="idDesError1"></label>
+					</td>
+				</tr>
+			</table>
+			<!--<table>
+				<tr>
+					<td>
+						<label>Numero Cedula Candidato</label>
+					</td>
+					<td>
+						<input type="text" name="ced" id="ced" />
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<input type="button" id="ValidaIdentidad" value="Validar Identidad" />
+					</td>
+				</tr>
+			</table>
+			<table>
+				<tr>
+					<td>
+						<label>Resultado:</label>
+					<td>
+					<td>
+						<label id="Resultado"></label>
+
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label>Descripcion Resultado:</label>
+					<td>
+					<td>
+						<label id="DescripcionResultado"></label>
+					</td>
+				</tr>
+			</table>-->
+			<table>
+				<tr>
+					<td>
+						<input type="button" id="formato" value="Solicitar Formato" />
+					</td>
+				</tr>
+
+				<tr>
+					<td>
+						<label>formato:</label>
+					<td>
+					<td>
+						<label id="DescripcionFormato"></label>
+					</td>
+				</tr>
+			</table>
+
+			<table>
+				<tr>
+					<td>
+						<input type="button" id="Gps" value="Solicitar GPS" />
+					</td>
+				</tr>
+
+				<tr>
+					<td>
+						<label>formato:</label>
+					<td>
+					<td>
+						<label id="DescripcionFormato"></label>
+					</td>
+				</tr>
+			</table>
+
+			<table>
+				<tr>
+						<td>
+								numero documento: <input type="text" name="numdoc" id="numdoc" value="1234567" />
+							</td>
+							<td>&nbsp;&nbsp;</td>
+					<td>
+						<input type="button" id="cargaformato" value="cargar Formato" />
+					</td>
+				</tr>
+
+				<tr>
+					<td>
+						<label>Resultado:</label>
+					<td>
+					<td>
+						<label id="CargaFormato"></label>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label>Latitud:</label>
+					<td>
+					<td>
+						<label id="idLatitud"></label>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label>Longitud:</label>
+					<td>
+					<td>
+						<label id="idLongitud"></label>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label>Error:</label>
+					<td>
+					<td>
+						<label id="CargaFormatoError"></label>
+					</td>
+				</tr>
+			</table>
+	</form>
+</body>
+
+</html>
